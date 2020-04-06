@@ -23,4 +23,4 @@ jobs:
 
       - name: 'Check Java Version'
         run: |
-          echo java --version
+          java --version
