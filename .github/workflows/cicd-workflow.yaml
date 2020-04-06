@@ -2,7 +2,7 @@ name: cicd-demo
 on:
   push:
     branches:
-      - '**'
+      - '*'
 jobs:
   build-job:
     name: Build Job
