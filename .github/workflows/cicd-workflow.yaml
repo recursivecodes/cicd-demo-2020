@@ -40,5 +40,5 @@ jobs:
           path: build/libs/*-all.jar
 
       - name: 'Run Tests'
-          run: |
-            ./gradlew test
+        run: |
+          ./gradlew test
