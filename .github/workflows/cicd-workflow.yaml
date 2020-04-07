@@ -74,4 +74,4 @@ jobs:
 
       - name: 'Check CLI Install'
         run: |
-          oci --version
+          /home/runner/bin/oci --help
