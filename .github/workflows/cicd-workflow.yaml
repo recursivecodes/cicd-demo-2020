@@ -121,7 +121,7 @@ jobs:
           username: opc
           key: ${{ secrets.VM_SSH_PRIVATE_KEY }}
           script: |
-            pid=`ps aux | grep "[c]icd-demo*" | awk '{print $2}'`
+            pid=`ps aux | grep "[c]icd-demo.jar" | awk '{print $2}'`
             if [ "$pid" == "" ]; then
               echo "Process not found"
             else
