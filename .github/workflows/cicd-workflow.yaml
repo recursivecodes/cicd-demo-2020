@@ -94,11 +94,11 @@ jobs:
 
       - name: 'Get Instance OCID'
         run: |
-          echo "::set-env name=INSTANCE_OCID::$(/home/runner/bin/oci compute instance list --display-name cicd-demo --query \"data [0].id\" --raw-output"
+          echo "::set-env name=INSTANCE_OCID::$(/home/runner/bin/oci compute instance list --display-name cicd-demo --query "data [0].id" --raw-output"
 
       - name: 'Get Instance IP'
         run: |
-          echo "::set-env name=INSTANCE_IP::$(/home/runner/bin/oci compute instance list-vnics --instance-id ${{env.INSTANCE_OCID}} --query 'data [0].\"public-ip\"' --raw-output"
+          echo "::set-env name=INSTANCE_IP::$(/home/runner/bin/oci compute instance list-vnics --instance-id ${{env.INSTANCE_OCID}} --query 'data [0]."public-ip"' --raw-output"
 
       - name: 'Do not create instance'
         if: ${{env.EXISTING_VM}}
