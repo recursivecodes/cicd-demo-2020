@@ -1,6 +1,7 @@
 plugins {
     id "net.ltgt.apt-eclipse" version "0.21"
     id "com.github.johnrengelman.shadow" version "5.2.0"
+    id "groovy"
     id "application"
 }
 
@@ -34,18 +35,16 @@ dependencies {
     testAnnotationProcessor platform("io.micronaut:micronaut-bom:$micronautVersion")
     testAnnotationProcessor "io.micronaut:micronaut-inject-java"
     testImplementation platform("io.micronaut:micronaut-bom:$micronautVersion")
-    testImplementation "org.junit.jupiter:junit-jupiter-api"
-    testImplementation "io.micronaut.test:micronaut-test-junit5"
+    testImplementation "io.micronaut:micronaut-inject-groovy:$micronautVersion"
+    testImplementation("org.spockframework:spock-core")
     testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine"
+    testCompile "io.micronaut.test:micronaut-test-spock"
 }
 
 test.classpath += configurations.developmentOnly
 
 mainClassName = "codes.recursive.Application"
-// use JUnit 5 platform
-test {
-    useJUnitPlatform()
-}
+
 tasks.withType(JavaCompile){
     options.encoding = "UTF-8"
     options.compilerArgs.add('-parameters')

@@ -38,3 +38,7 @@ jobs:
         with:
           name: 'cicd-demo-${{env.VERSION}}-all.jar'
           path: build/libs/*-all.jar
+
+      - name: 'Run Tests'
+          run: |
+            ./gradlew test

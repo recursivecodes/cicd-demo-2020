@@ -1,5 +1,5 @@
 profile: service
 defaultPackage: codes.recursive
 ---
-testFramework: junit
+testFramework: spock
 sourceLanguage: java
