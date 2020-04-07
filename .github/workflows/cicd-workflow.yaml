@@ -62,6 +62,7 @@ jobs:
           echo "key_file=~/.oci/key.pem" >> ~/.oci/config
           echo "${{secrets.OCI_KEY_FILE}}" >> ~/.oci/key.pem
           echo "${{secrets.VM_SSH_KEY}}" >> /home/runner/.oci/id_vm.pub
+
       - name: 'Install OCI CLI'
         run: |
           curl -L -O https://raw.githubusercontent.com/oracle/oci-cli/master/scripts/install/install.sh
@@ -74,12 +75,20 @@ jobs:
 
       - name: 'Check Existing Instance'
         run: |
-          ::set-env name=EXISTING_VM::$(/home/runner/bin/oci compute instance list --display-name cicd-demo)
+          ::set-env name=EXISTING_VM::$(/home/runner/bin/oci compute instance list --compartment-id ${{secrets.VM_COMPARTMENT_OCID}} --display-name cicd-demo)
 
       - name: 'Create Instance'
         if: ${{!env.EXISTING_VM}}
         run: |
-          echo "create vm..."
+          /home/runner/bin/oci compute instance launch \
+            --compartment-id ${{secrets.VM_COMPARTMENT_OCID}} \
+            --availability-domain ${{secrets.VM_AVAILABILITY_DOMAIN}} \
+            --shape ${{secrets.VM_SHAPE}} \
+            --assign-public-ip true \
+            --display-name cicd-demo \
+            --image-id ${{secrets.VM_CUSTOM_IMAGE_OCID}} \
+            --ssh-authorized-keys-file ${{secrets.VM_SSH_KEY}} \
+            --subnet-id ${{secrets.VM_SUBNET_OCID}} \
 
       - name: 'Do not create instance'
         if: ${{env.EXISTING_VM}}
