@@ -68,7 +68,10 @@ jobs:
           chmod +x install.sh
           ./install.sh --accept-all-defaults
 
-      - name: 'Check CLI Install'
+      - name: 'Restart Shell'
         run: |
           exec -l $SHELL
+
+      - name: 'Check CLI Install'
+        run: |
           oci --version
