@@ -61,13 +61,19 @@ jobs:
           echo "tenancy=${{secrets.OCI_TENANCY_OCID}}" >> ~/.oci/config
           echo "key_file=~/.oci/key.pem" >> ~/.oci/config
           echo "${{secrets.OCI_KEY_FILE}}" >> ~/.oci/key.pem
-          echo "${{secrets.VM_SSH_KEY}}" >> /home/runner/.oci/id_vm.pub
+          echo "${{secrets.VM_SSH_PUB_KEY}}" >> /home/runner/.oci/id_vm.pub
 
       - name: 'Install OCI CLI'
         run: |
           curl -L -O https://raw.githubusercontent.com/oracle/oci-cli/master/scripts/install/install.sh
           chmod +x install.sh
           ./install.sh --accept-all-defaults
+          echo "export PATH=$PATH:/home/runner/bin" >> /home/runner/.bashrc
+          exec -l $SHELL
+
+      - name: 'Foo'
+        run: |
+          echo $(oci --version)
 
       - name: 'Fix Config File Permissions'
         run: |
@@ -106,7 +112,37 @@ jobs:
           --query 'data [0]."public-ip"' \
           --raw-output)"
 
-      - name: 'Do not create instance'
-        if: ${{env.EXISTING_VM}}
-        run: |
-          echo "don't create it..."
+      - name: 'Stop App'
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ env.INSTANCE_IP }}
+          username: opc
+          key: ${{ secrets.VM_SSH_PRIVATE_KEY }}
+          script: |
+            pid=`ps aux | grep "[c]icd-demo*" | awk '{print $2}'`
+            if [ "$pid" == "" ]; then
+              echo "Process not found"
+            else
+              kill -9 $pid
+            fi
+            sudo mkdir -p /app
+
+      - name: 'Push JAR'
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ env.INSTANCE_IP }}
+          username: opc
+          key: ${{ secrets.VM_SSH_PRIVATE_KEY }}
+          source: "build/libs/cicd-demo-${{env.VERSION}}-all.jar"
+          target: "app"
+          strip_components: 2
+
+      - name: 'Start App'
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ env.INSTANCE_IP }}
+          username: opc
+          key: ${{ secrets.VM_SSH_PRIVATE_KEY }}
+          script: |
+            sudo mv ~/app/cicd-demo-${{env.VERSION}}-all.jar /app/cicd-demo.jar
+            nohup java -jar /app/cicd-demo.jar > output.$(date --iso).log 2>&1 &
