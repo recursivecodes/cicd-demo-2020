@@ -13,10 +13,4 @@ class HelloWorldSpec extends AbstractSpec {
         foo.reverse() == 'rab'
     }
 
-    def "test failure"() {
-        when:
-        true == true
-        then:
-        false == true
-    }
 }
