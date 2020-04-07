@@ -69,9 +69,10 @@ jobs:
           chmod +x install.sh
           ./install.sh --accept-all-defaults
 
-      - name: 'Restart Shell'
+      - name: 'Fix config file permissions'
         run: |
-          exec -l $SHELL
+          /home/runner/bin/oci setup repair-file-permissions --file /home/runner/.oci/config
+          /home/runner/bin/oci setup repair-file-permissions --file /home/runner/.oci/key.pem
 
       - name: 'Check Existing Instance'
         run: |
