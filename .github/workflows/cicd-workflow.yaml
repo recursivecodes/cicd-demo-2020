@@ -88,7 +88,7 @@ jobs:
             --assign-public-ip true \
             --display-name cicd-demo \
             --image-id ${{secrets.VM_CUSTOM_IMAGE_OCID}} \
-            --ssh-authorized-keys-file ${{secrets.VM_SSH_KEY}} \
+            --ssh-authorized-keys-file /home/runner/.oci/id_vm.pub \
             --subnet-id ${{secrets.VM_SUBNET_OCID}} \
 
       - name: 'Do not create instance'
