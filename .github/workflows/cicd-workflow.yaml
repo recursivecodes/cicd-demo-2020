@@ -76,7 +76,12 @@ jobs:
 
       - name: 'Check Existing Instance'
         run: |
-          echo "::set-env name=INSTANCE_OCID::$(/home/runner/bin/oci compute instance list --lifecycle-state RUNNING --compartment-id ${{secrets.VM_COMPARTMENT_OCID}} --display-name cicd-demo --query "data [0].id" --raw-output)"
+          echo "::set-env name=INSTANCE_OCID::$(/home/runner/bin/oci compute instance list \
+          --lifecycle-state RUNNING \
+          --compartment-id ${{secrets.VM_COMPARTMENT_OCID}} \
+          --display-name cicd-demo \
+          --query "data [0].id" \
+          --raw-output)"
 
       - name: 'Create Instance'
         if: ${{!env.INSTANCE_OCID}}
@@ -91,12 +96,15 @@ jobs:
             --ssh-authorized-keys-file /home/runner/.oci/id_vm.pub \
             --subnet-id ${{secrets.VM_SUBNET_OCID}} \
             --wait-for-state RUNNING \
-            --query "data [0].id" \
+            --query "data.id" \
             --raw-output)"
 
       - name: 'Get Instance IP'
         run: |
-          echo "::set-env name=INSTANCE_IP::$(/home/runner/bin/oci compute instance list-vnics --instance-id ${{env.INSTANCE_OCID}} --query 'data [0]."public-ip"' --raw-output)"
+          echo "::set-env name=INSTANCE_IP::$(/home/runner/bin/oci compute instance list-vnics \
+          --instance-id ${{env.INSTANCE_OCID}} \
+          --query 'data [0]."public-ip"' \
+          --raw-output)"
 
       - name: 'Do not create instance'
         if: ${{env.EXISTING_VM}}
