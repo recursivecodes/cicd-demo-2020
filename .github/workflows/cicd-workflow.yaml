@@ -90,8 +90,8 @@ jobs:
             --image-id ${{secrets.VM_CUSTOM_IMAGE_OCID}} \
             --ssh-authorized-keys-file /home/runner/.oci/id_vm.pub \
             --subnet-id ${{secrets.VM_SUBNET_OCID}} \
-            --wait-for-state RUNNING
-            --query "data [0].id"
+            --wait-for-state RUNNING \
+            --query "data [0].id" \
             --raw-output)"
 
       - name: 'Get Instance IP'
