@@ -26,8 +26,8 @@ jobs:
           java --version
 
       - name: 'Run Tests'
-          run: |
-            ./gradlew test
+        run: |
+          ./gradlew test
 
       - name: 'Publish Test Report'
         if: always()
