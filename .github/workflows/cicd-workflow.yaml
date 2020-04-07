@@ -69,19 +69,19 @@ jobs:
           chmod +x install.sh
           ./install.sh --accept-all-defaults
 
-      - name: 'Fix config file permissions'
+      - name: 'Fix Config File Permissions'
         run: |
           /home/runner/bin/oci setup repair-file-permissions --file /home/runner/.oci/config
           /home/runner/bin/oci setup repair-file-permissions --file /home/runner/.oci/key.pem
 
       - name: 'Check Existing Instance'
         run: |
-          echo "::set-env name=EXISTING_VM::$(/home/runner/bin/oci compute instance list --lifecycle-state RUNNING --compartment-id ${{secrets.VM_COMPARTMENT_OCID}} --display-name cicd-demo)"
+          echo "::set-env name=INSTANCE_OCID::$(/home/runner/bin/oci compute instance list --lifecycle-state RUNNING --compartment-id ${{secrets.VM_COMPARTMENT_OCID}} --display-name cicd-demo --query "data [0].id" --raw-output)"
 
       - name: 'Create Instance'
-        if: ${{!env.EXISTING_VM}}
+        if: ${{!env.INSTANCE_OCID}}
         run: |
-          /home/runner/bin/oci compute instance launch \
+          echo "::set-env name=INSTANCE_OCID::$(/home/runner/bin/oci compute instance launch \
             --compartment-id ${{secrets.VM_COMPARTMENT_OCID}} \
             --availability-domain ${{secrets.VM_AVAILABILITY_DOMAIN}} \
             --shape ${{secrets.VM_SHAPE}} \
@@ -91,18 +91,13 @@ jobs:
             --ssh-authorized-keys-file /home/runner/.oci/id_vm.pub \
             --subnet-id ${{secrets.VM_SUBNET_OCID}} \
             --wait-for-state RUNNING
-
-      - name: 'Get Instance OCID'
-        run: |
-          echo "::set-env name=INSTANCE_OCID::$(/home/runner/bin/oci compute instance list --compartment-id ${{secrets.VM_COMPARTMENT_OCID}} --display-name cicd-demo --query "data [0].id" --raw-output)"
+            --query "data [0].id"
+            --raw-output)"
 
       - name: 'Get Instance IP'
         run: |
           echo "::set-env name=INSTANCE_IP::$(/home/runner/bin/oci compute instance list-vnics --instance-id ${{env.INSTANCE_OCID}} --query 'data [0]."public-ip"' --raw-output)"
 
-      - name: 'Echo IP'
-        run: |
-          echo ${{env.INSTANCE_IP}}
       - name: 'Do not create instance'
         if: ${{env.EXISTING_VM}}
         run: |
