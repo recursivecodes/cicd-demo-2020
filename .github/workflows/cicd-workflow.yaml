@@ -70,4 +70,5 @@ jobs:
 
       - name: 'Check CLI Install'
         run: |
-          exec -l $SHELL && oci --version
+          exec -l $SHELL
+          oci --version
