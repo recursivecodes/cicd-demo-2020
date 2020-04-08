@@ -62,11 +62,15 @@ tasks.withType(JavaCompile){
 if(! hasProperty("publicKeyFile")){
     ext.publicKeyFile=""
 }
+if(! hasProperty("userDataFile")){
+    ext.userDataFile=""
+}
 def step01 = tasks.register('step01', org.kordamp.gradle.plugin.oci.tasks.instance.SetupInstanceTask) {
     verbose       = true
     image         = 'java-11-custom-image'
     shape         = 'VM.Standard2.1'
     publicKeyFile = file("${project.publicKeyFile}")
+    userDataFile  = file("${project.userDataFile}")
 }
 
 shadowJar {
