@@ -3,6 +3,8 @@ plugins {
     id "com.github.johnrengelman.shadow" version "5.2.0"
     id "groovy"
     id "application"
+    id 'org.kordamp.gradle.base' version '0.33.0'
+    id 'org.kordamp.gradle.oci' version '0.4.0'
 }
 
 version "0.1"
@@ -46,6 +48,16 @@ mainClassName = "codes.recursive.Application"
 tasks.withType(JavaCompile){
     options.encoding = "UTF-8"
     options.compilerArgs.add('-parameters')
+}
+/* default project properties to keep intellij from annoying me with warnings */
+if(! hasProperty("publicKeyFile")){
+    ext.publicKeyFile=""
+}
+def step01 = tasks.register('step01', org.kordamp.gradle.plugin.oci.tasks.instance.SetupInstanceTask) {
+    verbose       = true
+    image         = 'java-11-custom-image'
+    shape         = 'VM.Standard2.1'
+    publicKeyFile = file("${project.publicKeyFile}")
 }
 
 shadowJar {
