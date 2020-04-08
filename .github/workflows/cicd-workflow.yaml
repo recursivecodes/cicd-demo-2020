@@ -73,14 +73,14 @@ jobs:
             -PpublicKeyFile=/home/runner/.oci/id_vm.pub \
             -PuserDataFile=/home/runner/cloud-init.sh
 
-      - name: 'Set Env Vars'
+      - name: 'Get Instance IP'
         run: |
           more build/oci/instance/cicdgradle.properties
           function prop {
            grep "${1}" build/oci/instance/cicdgradle.properties|cut -d'=' -f2
           }
           export IP=$(prop 'instance.public-ip.0')
-          echo "::set-env name=IP_ADDRESS::$IP"
+          echo "::set-env name=INSTANCE_IP::$IP"
 
       - name: 'Stop App'
         uses: appleboy/ssh-action@master
