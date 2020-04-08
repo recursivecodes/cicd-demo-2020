@@ -3,7 +3,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'javax.activation:activation:1.1.1'
+        classpath 'com.sun.activation:jakarta.activation:1.2.2'
     }
 }
 
