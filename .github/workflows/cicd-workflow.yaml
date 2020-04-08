@@ -69,7 +69,6 @@ jobs:
           ./gradlew --stacktrace step01 \
             -Doci.compartment.id=${{secrets.VM_COMPARTMENT_OCID}} \
             -Doci.instance.name=cicdgradle \
-            -Doci.subnet.id=${{secrets.VM_SUBNET_OCID}} \
             -PpublicKeyFile=/home/runner/.oci/id_vm.pub \
             -PuserDataFile=/home/runner/cloud-init.sh
 
@@ -79,8 +78,16 @@ jobs:
           function prop {
            grep "${1}" build/oci/instance/cicdgradle.properties|cut -d'=' -f2
           }
+          export SEC_LIST_ID=$(prop 'vcn.security-list.id')
           export IP=$(prop 'instance.public-ip.0')
-          echo "::set-env name=INSTANCE_IP::$IP"
+          echo "::set-env name=SECURITY_LIST_ID::$SEC_LIST_ID"
+          echo "::set-env name=IP_ADDRESS::$IP"
+
+      - name: 'Add Ingress Rule'
+        run: |
+          ./gradlew addIngressSecurityRule \
+            --destination-port=8080 \
+            --security-list-id=${{env.SECURITY_LIST_ID}}
 
       - name: 'Stop App'
         uses: appleboy/ssh-action@master
