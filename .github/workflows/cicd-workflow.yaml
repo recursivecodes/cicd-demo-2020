@@ -72,15 +72,23 @@ jobs:
             -PpublicKeyFile=/home/runner/.oci/id_vm.pub \
             -PuserDataFile=/home/runner/cloud-init.sh
 
-      - name: 'Get Instance IP'
+      - name: 'Set Env Vars'
+          run: |
+            more build/oci/instance/actions1.properties
+            function prop {
+             grep "${1}" build/oci/instance/actions1.properties|cut -d'=' -f2
+            }
+            export SEC_LIST_ID=$(prop 'vcn.security-list.id')
+            export IP=$(prop 'instance.public-ip.0')
+            echo "::set-env name=SECURITY_LIST_ID::$SEC_LIST_ID"
+            echo "::set-env name=IP_ADDRESS::$IP"
+
+      - name: 'Add Ingress Rule'
         run: |
-          more build/oci/instance/cicddemo2.properties
-          function prop {
-              grep "${1}" build/oci/instance/cicddemo2.properties|cut -d'=' -f2
-          }
-          export IP=$(prop 'instance.public-ip.0')
-          echo "::set-env name=INSTANCE_IP::$IP"
-          echo "The instance IP is ${{env.INSTANCE_IP}}"
+          ./gradlew addIngressSecurityRule \
+            --destination-port=8080 \
+            --security-list-id=${{env.SECURITY_LIST_ID}}
+
       - name: 'Stop App'
         uses: appleboy/ssh-action@master
         with:
