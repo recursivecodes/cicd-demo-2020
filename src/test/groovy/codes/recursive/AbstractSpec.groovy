@@ -1,6 +1,7 @@
 package codes.recursive
 
 import io.micronaut.context.ApplicationContext
+import io.micronaut.context.env.Environment
 import io.micronaut.data.model.query.builder.sql.Dialect
 import io.micronaut.data.runtime.config.SchemaGenerate
 import org.testcontainers.containers.OracleContainer
@@ -19,10 +20,10 @@ class AbstractSpec extends Specification {
                     .withPassword("Str0ngPassw0rd")
     @Shared
     @AutoCleanup
-    static ApplicationContext context;
+    static ApplicationContext context
 
     static  {
-        System.setProperty("oracle.jdbc.fanEnabled", "false");
+        System.setProperty("oracle.jdbc.fanEnabled", "false")
         oracleContainer.start()
         context = ApplicationContext.run(
                 "datasources.default.url": oracleContainer.getJdbcUrl(),
