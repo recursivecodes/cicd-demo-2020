@@ -26,11 +26,14 @@ class AbstractSpec extends Specification {
         System.setProperty("oracle.jdbc.fanEnabled", "false")
         oracleContainer.start()
         context = ApplicationContext.run(
-                "datasources.default.url": oracleContainer.getJdbcUrl(),
-                "datasources.default.username": oracleContainer.getUsername(),
-                "datasources.default.password": oracleContainer.getPassword(),
-                "datasources.default.schema-generate": SchemaGenerate.NONE,
-                "datasources.default.dialect": Dialect.ORACLE
+                [
+                        "datasources.default.url": oracleContainer.getJdbcUrl(),
+                        "datasources.default.username": oracleContainer.getUsername(),
+                        "datasources.default.password": oracleContainer.getPassword(),
+                        "datasources.default.schema-generate": SchemaGenerate.NONE,
+                        "datasources.default.dialect": Dialect.ORACLE
+                ],
+                Environment.TEST
         )
     }
 }
