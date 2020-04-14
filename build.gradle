@@ -38,7 +38,7 @@ dependencies {
     testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine"
     testCompile "io.micronaut.test:micronaut-test-spock"
 
-    compile "io.micronaut.configuration:micronaut-liquibase"
+    compile "io.micronaut.configuration:micronaut-liquibase:1.3.0"
     /* override and get the latest liquibase */
     compile 'org.liquibase:liquibase-core:3.8.8'
     compile 'com.fasterxml.jackson.module:jackson-module-jaxb-annotations'
