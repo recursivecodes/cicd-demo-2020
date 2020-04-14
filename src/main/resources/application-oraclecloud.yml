@@ -1,6 +1,6 @@
 datasources:
   oraclecloud:
-    url: ${DATASOURCE_URL:jdbc:oracle:thin:@demodb_LOW?TNS_ADMIN=/wallet}
+    url: ${DATASOURCE_URL:`jdbc:oracle:thin:@demodb_LOW?TNS_ADMIN=/wallet`}
     driverClassName: oracle.jdbc.driver.OracleDriver
     username: ${DATASOURCE_USERNAME:cicd}
     password: ${DATASOURCE_PASSWORD}
