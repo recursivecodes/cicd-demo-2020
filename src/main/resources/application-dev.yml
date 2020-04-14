@@ -1,5 +1,5 @@
 datasources:
-  dev:
+  default:
     url: ${DATASOURCE_URL}
     driverClassName: oracle.jdbc.driver.OracleDriver
     username: ${DATASOURCE_USERNAME}
