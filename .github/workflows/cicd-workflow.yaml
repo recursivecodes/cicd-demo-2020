@@ -27,6 +27,7 @@ jobs:
 
       - name: 'Run Tests'
         run: |
+          echo "running tests"
           ./gradlew test
 
       - name: 'Publish Test Report'
