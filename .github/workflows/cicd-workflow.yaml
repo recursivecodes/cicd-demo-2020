@@ -28,7 +28,7 @@ jobs:
       - name: 'Run Tests'
         run: |
           #./gradlew test
-          echo "Running tests..."
+          echo "Run tests..."
 
       - name: 'Publish Test Report'
         if: always()
