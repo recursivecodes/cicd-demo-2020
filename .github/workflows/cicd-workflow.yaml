@@ -63,113 +63,26 @@ jobs:
           echo "key_file=~/.oci/key.pem" >> ~/.oci/config
           echo "${{secrets.OCI_KEY_FILE}}" >> ~/.oci/key.pem
           echo "${{secrets.VM_SSH_PUB_KEY}}" >> /home/runner/.oci/id_vm.pub
-          sudo mkdir /wallet
-          sudo sh -c  'echo "${{secrets.WALLET_CWALLET}}" | base64 -d >> /wallet/cwallet.sso'
-          sudo sh -c  'echo "${{secrets.WALLET_EWALLET}}" | base64 -d >> /wallet/ewallet.p12'
-          sudo sh -c  'echo "${{secrets.WALLET_KEYSTORE}}" | base64 -d >> /wallet/keystore.jks'
-          sudo sh -c  'echo "${{secrets.WALLET_OJDBC}}" | base64 -d >> /wallet/ojdbc.properties'
-          sudo sh -c  'echo "${{secrets.WALLET_SQLNET}}" | base64 -d >> /wallet/sqlnet.ora'
-          sudo sh -c  'echo "${{secrets.WALLET_TNSNAMES}}" | base64 -d >> /wallet/tnsnames.ora'
-          sudo sh -c  'echo "${{secrets.WALLET_TRUSTSTORE}}" | base64 -d >> /wallet/truststore.jks'
+          sudo mkdir /home/runner/work/github-actions-micronaut-demo/github-actions-micronaut-demo/wallet
+          sudo sh -c  'echo "${{secrets.WALLET_CWALLET}}" | base64 -d >> /home/runner/work/github-actions-micronaut-demo/github-actions-micronaut-demo/wallet/cwallet.sso'
+          sudo sh -c  'echo "${{secrets.WALLET_EWALLET}}" | base64 -d >> /home/runner/work/github-actions-micronaut-demo/github-actions-micronaut-demo/wallet/ewallet.p12'
+          sudo sh -c  'echo "${{secrets.WALLET_KEYSTORE}}" | base64 -d >> /home/runner/work/github-actions-micronaut-demo/github-actions-micronaut-demo/wallet/keystore.jks'
+          sudo sh -c  'echo "${{secrets.WALLET_OJDBC}}" | base64 -d >> /home/runner/work/github-actions-micronaut-demo/github-actions-micronaut-demo/wallet/ojdbc.properties'
+          sudo sh -c  'echo "${{secrets.WALLET_SQLNET}}" | base64 -d >> /home/runner/work/github-actions-micronaut-demo/github-actions-micronaut-demo/wallet/sqlnet.ora'
+          sudo sh -c  'echo "${{secrets.WALLET_TNSNAMES}}" | base64 -d >> /home/runner/work/github-actions-micronaut-demo/github-actions-micronaut-demo/wallet/tnsnames.ora'
+          sudo sh -c  'echo "${{secrets.WALLET_TRUSTSTORE}}" | base64 -d >> /home/runner/work/github-actions-micronaut-demo/github-actions-micronaut-demo/wallet/truststore.jks'
 
-      - name: 'Install OCI CLI'
-        run: |
-          curl -L -O https://raw.githubusercontent.com/oracle/oci-cli/master/scripts/install/install.sh
-          chmod +x install.sh
-          ./install.sh --accept-all-defaults
-          echo "::add-path::/home/runner/bin"
-          exec -l $SHELL
+      - name: 'Login To OCIR'
+        uses: actions-hub/docker/login@master
+        env:
+          DOCKER_USERNAME: ${{ secrets.OCIR_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.OCIR_PASSWORD }}
+          DOCKER_REGISTRY_URL: phx.ocir.io
 
-      - name: 'Fix Config File Permissions'
-        run: |
-          oci setup repair-file-permissions --file /home/runner/.oci/config
-          oci setup repair-file-permissions --file /home/runner/.oci/key.pem
+      - name: 'Docker Build'
+        run: docker build -t phx.ocir.io/toddrsharp/cicd-demo/cicd-demo:latest .
 
-      - name: 'Check Existing Instance'
-        run: |
-          echo "::set-env name=INSTANCE_OCID::$( \
-            oci compute instance list \
-            --lifecycle-state RUNNING \
-            --compartment-id ${{secrets.VM_COMPARTMENT_OCID}} \
-            --display-name cicd-demo \
-            --query "data [0].id" \
-            --raw-output \
-          )"
-
-      - name: 'Create Instance'
-        if: ${{!env.INSTANCE_OCID}}
-        run: |
-          echo "::set-env name=INSTANCE_OCID::$( \
-            oci compute instance launch \
-              --compartment-id ${{secrets.VM_COMPARTMENT_OCID}} \
-              --availability-domain ${{secrets.VM_AVAILABILITY_DOMAIN}} \
-              --shape ${{secrets.VM_SHAPE}} \
-              --assign-public-ip true \
-              --display-name cicd-demo \
-              --image-id ${{secrets.VM_CUSTOM_IMAGE_OCID}} \
-              --ssh-authorized-keys-file /home/runner/.oci/id_vm.pub \
-              --subnet-id ${{secrets.VM_SUBNET_OCID}} \
-              --wait-for-state RUNNING \
-              --query "data.id" \
-              --raw-output \
-          )"
-
-      - name: 'Get Instance IP'
-        run: |
-          echo "::set-env name=INSTANCE_IP::$( \
-            oci compute instance list-vnics \
-            --instance-id ${{env.INSTANCE_OCID}} \
-            --query 'data [0]."public-ip"' \
-            --raw-output \
-          )"
-
-      - name: 'Stop App'
-        uses: appleboy/ssh-action@master
+      - name: 'Docker Push'
+        uses: actions-hub/docker@master
         with:
-          host: ${{ env.INSTANCE_IP }}
-          username: opc
-          key: ${{ secrets.VM_SSH_PRIVATE_KEY }}
-          script: |
-            pid=`ps aux | grep "[c]icd-demo.jar" | awk '{print $2}'`
-            if [ "$pid" == "" ]; then
-              echo "Process not found"
-            else
-              kill -9 $pid
-            fi
-            sudo mkdir -p /app
-
-      - name: 'Push JAR'
-        uses: appleboy/scp-action@master
-        with:
-          host: ${{ env.INSTANCE_IP }}
-          username: opc
-          key: ${{ secrets.VM_SSH_PRIVATE_KEY }}
-          source: "build/libs/cicd-demo-${{env.VERSION}}-all.jar"
-          target: "app"
-          strip_components: 2
-
-      - name: 'Write Wallet'
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ env.INSTANCE_IP }}
-          username: opc
-          key: ${{ secrets.VM_SSH_PRIVATE_KEY }}
-          script: |
-            sudo mkdir /wallet
-            sudo sh -c 'echo "${{secrets.WALLET_CWALLET}}" | base64 -d >> /wallet/cwallet.sso'
-            sudo sh -c 'echo "${{secrets.WALLET_EWALLET}}" | base64 -d >> /wallet/ewallet.p12'
-            sudo sh -c 'echo "${{secrets.WALLET_KEYSTORE}}" | base64 -d >> /wallet/keystore.jks'
-            sudo sh -c 'echo "${{secrets.WALLET_OJDBC}}" | base64 -d >> /wallet/ojdbc.properties'
-            sudo sh -c 'echo "${{secrets.WALLET_SQLNET}}" | base64 -d >> /wallet/sqlnet.ora'
-            sudo sh -c 'echo "${{secrets.WALLET_TNSNAMES}}" | base64 -d >> /wallet/tnsnames.ora'
-            sudo sh -c 'echo "${{secrets.WALLET_TRUSTSTORE}}" | base64 -d >> /wallet/truststore.jks'
-
-      - name: 'Start App'
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ env.INSTANCE_IP }}
-          username: opc
-          key: ${{ secrets.VM_SSH_PRIVATE_KEY }}
-          script: |
-            sudo mv ~/app/cicd-demo-${{env.VERSION}}-all.jar /app/cicd-demo.jar
-            nohup java -DDATASOURCE_PASSWORD=${{secrets.DB_PASSWORD}} -jar /app/cicd-demo.jar > output.$(date --iso).log 2>&1 &
+          args: push phx.ocir.io/toddrsharp/cicd-demo/cicd-demo:latest
