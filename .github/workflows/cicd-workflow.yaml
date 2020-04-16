@@ -92,7 +92,7 @@ jobs:
         env:
           KUBE_CONFIG_DATA: ${{ secrets.OKE_KUBE_CONFIG }}
         with:
-          args: '"kubectl create secret generic cicd-demo-secrets --from-literal=dbPassword=\'${{secrets.DB_PASSWORD}}\'"'
+          args: '"kubectl create secret generic cicd-demo-secrets --from-literal=dbPassword='${{secrets.DB_PASSWORD}}'"'
 
       - name: 'Deploy To Kubernetes'
         uses: steebchen/kubectl@master
