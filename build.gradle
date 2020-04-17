@@ -9,13 +9,14 @@ version "0.1"
 group "codes.recursive"
 
 repositories {
+    mavenLocal()
     mavenCentral()
     maven { url "https://jcenter.bintray.com" }
 }
 
 configurations {
     // for dependencies that are needed for development only
-    developmentOnly 
+    developmentOnly
 }
 
 dependencies {
@@ -46,7 +47,7 @@ dependencies {
     annotationProcessor 'io.micronaut.data:micronaut-data-processor:1.0.2'
     compile 'io.micronaut.data:micronaut-data-jdbc:1.0.2'
     compile group: 'com.oracle.ojdbc', name: 'ojdbc8', version: '19.3.0.0'
-    runtime 'io.micronaut.configuration:micronaut-jdbc-tomcat'
+    runtime 'io.micronaut.configuration:micronaut-jdbc-ucp:2.0.1.BUILD-SNAPSHOT'
     compileOnly 'jakarta.persistence:jakarta.persistence-api:2.2.2'
 
     testCompile "org.testcontainers:spock:1.13.0"
