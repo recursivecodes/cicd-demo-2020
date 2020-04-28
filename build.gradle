@@ -46,7 +46,7 @@ dependencies {
 
     annotationProcessor 'io.micronaut.data:micronaut-data-processor:1.0.2'
     compile 'io.micronaut.data:micronaut-data-jdbc:1.0.2'
-    compile group: 'com.oracle.ojdbc', name: 'ojdbc8', version: '19.3.0.0'
+    compile group: 'com.oracle.ojdbc', name: 'ojdbc10', version: '19.3.0.0'
     runtime 'io.micronaut.configuration:micronaut-jdbc-ucp:2.1.0'
     compileOnly 'jakarta.persistence:jakarta.persistence-api:2.2.2'
 
