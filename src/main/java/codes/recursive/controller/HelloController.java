@@ -6,14 +6,17 @@ import codes.recursive.service.UserService;
 import io.micronaut.core.util.CollectionUtils;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.HttpStatus;
-import io.micronaut.http.MediaType;
-import io.micronaut.http.annotation.*;
+import io.micronaut.http.annotation.Body;
+import io.micronaut.http.annotation.Controller;
+import io.micronaut.http.annotation.Get;
+import io.micronaut.http.annotation.Post;
 
 import javax.validation.Valid;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 @Controller("/hello")
 public class HelloController {
@@ -48,10 +51,9 @@ public class HelloController {
         );
     }
 
-    @Get("/foo")
-    @Produces(MediaType.TEXT_PLAIN)
-    public HttpResponse foo() {
-        return HttpResponse.ok("bar");
+    @Get("/stats")
+    public HttpResponse stats() {
+        return HttpResponse.ok(userService.getStats());
     }
 
     @Get("/users")

@@ -1,6 +1,8 @@
 package codes.recursive.service;
 
-import io.micronaut.context.annotation.Requires;
+import io.micronaut.transaction.jdbc.DelegatingDataSource;
+import oracle.ucp.jdbc.JDBCConnectionPoolStatistics;
+import oracle.ucp.jdbc.PoolDataSourceImpl;
 
 import javax.inject.Singleton;
 import javax.sql.DataSource;
@@ -25,6 +27,12 @@ public class UserService {
         Statement statement = connection.createStatement();
         ResultSet resultSet = statement.executeQuery("select * from users");
         return convertResultSetToList(resultSet);
+    }
+
+    public JDBCConnectionPoolStatistics getStats() {
+        DelegatingDataSource ds = (DelegatingDataSource) dataSource;
+        PoolDataSourceImpl targetDataSource = (PoolDataSourceImpl) ds.getTargetDataSource();
+        return targetDataSource.getStatistics();
     }
 
     private List<HashMap<String,Object>> convertResultSetToList(ResultSet rs) throws SQLException {
