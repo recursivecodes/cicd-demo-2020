@@ -75,6 +75,8 @@ jobs:
           sudo sh -c  'echo "${{secrets.WALLET_SQLNET}}" | base64 -d >> ${{env.WORK_DIR}}/wallet/sqlnet.ora'
           sudo sh -c  'echo "${{secrets.WALLET_TNSNAMES}}" | base64 -d >> ${{env.WORK_DIR}}/wallet/tnsnames.ora'
           sudo sh -c  'echo "${{secrets.WALLET_TRUSTSTORE}}" | base64 -d >> ${{env.WORK_DIR}}/wallet/truststore.jks'
+          sudo sh -c  'chown opc ${{env.WORK_DIR}}/wallet/'
+          sudo sh -c  'chgrp opc ${{env.WORK_DIR}}/wallet/'
 
       - name: 'Login To OCIR'
         uses: actions-hub/docker/login@master
