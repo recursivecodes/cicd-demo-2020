@@ -57,13 +57,14 @@ jobs:
       - name: 'Write Config & Key Files'
         run: |
           mkdir -p ~/.oci
-          echo "[DEFAULT]" >> ~/.oci/config
-          echo "user=${{secrets.OCI_USER_OCID}}" >> ~/.oci/config
-          echo "fingerprint=${{secrets.OCI_FINGERPRINT}}" >> ~/.oci/config
-          echo "pass_phrase=${{secrets.OCI_PASSPHRASE}}" >> ~/.oci/config
-          echo "region=${{secrets.OCI_REGION}}" >> ~/.oci/config
-          echo "tenancy=${{secrets.OCI_TENANCY_OCID}}" >> ~/.oci/config
-          echo "key_file=~/.oci/key.pem" >> ~/.oci/config
+          echo "[DEFAULT]" >> ~/.oci/config-tmp
+          echo "user=${{secrets.OCI_USER_OCID}}" >> ~/.oci/config-tmp
+          echo "fingerprint=${{secrets.OCI_FINGERPRINT}}" >> ~/.oci/config-tmp
+          echo "pass_phrase=${{secrets.OCI_PASSPHRASE}}" >> ~/.oci/config-tmp
+          echo "region=${{secrets.OCI_REGION}}" >> ~/.oci/config-tmp
+          echo "tenancy=${{secrets.OCI_TENANCY_OCID}}" >> ~/.oci/config-tmp
+          echo "key_file=~/.oci/key.pem" >> ~/.oci/config-tmp
+          sudo sh -c 'mv ~/.oci/config-tmp ~/.oci/config'
           echo "${{secrets.OCI_KEY_FILE}}" >> ~/.oci/key.pem
           echo "${{secrets.VM_SSH_PUB_KEY}}" >> ~/.oci/id_vm.pub
           sudo mkdir ${{env.WORK_DIR}}/wallet
