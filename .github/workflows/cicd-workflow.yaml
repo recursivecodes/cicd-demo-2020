@@ -18,7 +18,7 @@ jobs:
 
       - name: 'Test'
         run: |
-          echo `${{env.GITHUB_WORKSPACE}}/cicd-demo`
+          echo ${{env.GITHUB_WORKSPACE}}/cicd-demo
 
       - name: 'Setup Java 11'
         uses: actions/setup-java@v1
