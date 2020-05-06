@@ -16,9 +16,8 @@ jobs:
       - name: 'Checkout'
         uses: actions/checkout@v2
 
-      - name: 'Test'
-        run: |
-          echo ${{env.GITHUB_WORKSPACE}}/cicd-demo
+      - name: 'Set Work Dir'
+        run: echo ::set-env name=WORK_DIR::$GITHUB_WORKSPACE/cicd-demo && echo ${{env.WORK_DIR}}
 
       - name: 'Setup Java 11'
         uses: actions/setup-java@v1
