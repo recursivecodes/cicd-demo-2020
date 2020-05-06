@@ -56,7 +56,7 @@ jobs:
 
       - name: 'Write Config & Key Files'
         run: |
-          mkdir ~/.oci
+          mkdir -p ~/.oci
           echo "[DEFAULT]" >> ~/.oci/config
           echo "user=${{secrets.OCI_USER_OCID}}" >> ~/.oci/config
           echo "fingerprint=${{secrets.OCI_FINGERPRINT}}" >> ~/.oci/config
