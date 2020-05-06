@@ -16,6 +16,9 @@ jobs:
       - name: 'Checkout'
         uses: actions/checkout@v2
 
+      - name: 'Set Work Dir'
+        run: echo ::set-env name=WORK_DIR::${{env.WORK_DIR}}
+
       - name: 'Setup Java 11'
         uses: actions/setup-java@v1
         with:
@@ -63,14 +66,14 @@ jobs:
           echo "key_file=~/.oci/key.pem" >> ~/.oci/config
           echo "${{secrets.OCI_KEY_FILE}}" >> ~/.oci/key.pem
           echo "${{secrets.VM_SSH_PUB_KEY}}" >> ~/.oci/id_vm.pub
-          sudo mkdir ${{GITHUB_WORKSPACE}}/wallet
-          sudo sh -c  'echo "${{secrets.WALLET_CWALLET}}" | base64 -d >> ${{GITHUB_WORKSPACE}}/wallet/cwallet.sso'
-          sudo sh -c  'echo "${{secrets.WALLET_EWALLET}}" | base64 -d >> ${{GITHUB_WORKSPACE}}/wallet/ewallet.p12'
-          sudo sh -c  'echo "${{secrets.WALLET_KEYSTORE}}" | base64 -d >> ${{GITHUB_WORKSPACE}}/wallet/keystore.jks'
-          sudo sh -c  'echo "${{secrets.WALLET_OJDBC}}" | base64 -d >> ${{GITHUB_WORKSPACE}}/wallet/ojdbc.properties'
-          sudo sh -c  'echo "${{secrets.WALLET_SQLNET}}" | base64 -d >> ${{GITHUB_WORKSPACE}}/wallet/sqlnet.ora'
-          sudo sh -c  'echo "${{secrets.WALLET_TNSNAMES}}" | base64 -d >> ${{GITHUB_WORKSPACE}}/wallet/tnsnames.ora'
-          sudo sh -c  'echo "${{secrets.WALLET_TRUSTSTORE}}" | base64 -d >> ${{GITHUB_WORKSPACE}}/wallet/truststore.jks'
+          sudo mkdir ${{env.WORK_DIR}}/wallet
+          sudo sh -c  'echo "${{secrets.WALLET_CWALLET}}" | base64 -d >> ${{env.WORK_DIR}}/wallet/cwallet.sso'
+          sudo sh -c  'echo "${{secrets.WALLET_EWALLET}}" | base64 -d >> ${{env.WORK_DIR}}/wallet/ewallet.p12'
+          sudo sh -c  'echo "${{secrets.WALLET_KEYSTORE}}" | base64 -d >> ${{env.WORK_DIR}}/wallet/keystore.jks'
+          sudo sh -c  'echo "${{secrets.WALLET_OJDBC}}" | base64 -d >> ${{env.WORK_DIR}}/wallet/ojdbc.properties'
+          sudo sh -c  'echo "${{secrets.WALLET_SQLNET}}" | base64 -d >> ${{env.WORK_DIR}}/wallet/sqlnet.ora'
+          sudo sh -c  'echo "${{secrets.WALLET_TNSNAMES}}" | base64 -d >> ${{env.WORK_DIR}}/wallet/tnsnames.ora'
+          sudo sh -c  'echo "${{secrets.WALLET_TRUSTSTORE}}" | base64 -d >> ${{env.WORK_DIR}}/wallet/truststore.jks'
 
       - name: 'Login To OCIR'
         uses: actions-hub/docker/login@master
