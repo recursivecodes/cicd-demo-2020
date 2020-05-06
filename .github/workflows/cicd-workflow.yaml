@@ -11,7 +11,7 @@ jobs:
 
       - name: 'Start build job'
         run: |
-          echo "Starting the build job."
+          echo "Starting the build job. Work dir is ${pwd}"
 
       - name: 'Checkout'
         uses: actions/checkout@v2
