@@ -41,7 +41,7 @@ public class HelloController {
         return HttpResponse.created(userRepository.save(user));
     }
 
-    @Get("/{id}")
+    @Get("/id/{id}")
     public HttpResponse getById(UUID id) {
         return HttpResponse.ok(
                 userRepository.findById(id)
